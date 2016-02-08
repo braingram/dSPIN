@@ -9,6 +9,13 @@
 
 #define NDSPINS 2
 
+#define SET_PARAM 0x00
+#define GET_PARAM 0x20
+#define RESET_DEVICE 0xC0
+#define GET_STATUS 0xD0
+
+#define ABS_POS 0x01
+
 SPISettings settings(5000000, MSBFIRST, SPI_MODE3);
 
 unsigned long values[NDSPINS];
@@ -78,6 +85,7 @@ void transfer() {
 }
 
 void reset_buffers() {
+    Serial.write("reset buffers\n")
     for (byte i=0; i < NDSPINS; i++) {
         values[i] = 0;
         n_bytes[i] = 0;
@@ -88,11 +96,75 @@ void reset_buffers() {
 
 void setup() {
     // begin SPI communications
+    Serial.begin(9600);
+    Serial.write("starting spi...\n")
     setup_spi();
 
     reset_buffers();
 }
 
 void loop() {
-    //
+    // get status from both autodrivers
+    commands[0] = GET_STATUS;
+    commands[1] = GET_STATUS;
+    n_bytes[0] = 2;
+    n_bytes[1] = 2;
+    transfer();
+    // report status
+    Serial.write(":STATUS:\n")
+    Serial.write(values[0]);
+    Serial.write("\n");
+    Serial.write(values[1]);
+    Serial.write("\n");
+    reset_buffers();
+
+    // get_param abs_pos
+    commands[0] = GET_PARAM | ABS_POS;
+    commands[1] = GET_PARAM | ABS_POS;
+    n_bytes[0] = 3;
+    n_bytes[1] = 3;
+    transfer();
+    // report abs_pos
+    Serial.write(":GET_PARAM | ABS_POS:\n")
+    Serial.write(values[0]);
+    Serial.write("\n");
+    Serial.write(values[1]);
+    Serial.write("\n");
+    reset_buffers();
+
+    // set_param abs_pos
+    commands[0] = SET_PARAM | ABS_POS;
+    commands[1] = SET_PARAM | ABS_POS;
+    n_bytes[0] = 3;
+    n_bytes[1] = 3;
+    values[0] = 123456;
+    values[1] = 789012;
+    transfer();
+    Serial.write(":SET_PARAM | ABS_POS:\n")
+    reset_buffers();
+
+     // get_param abs_pos
+    commands[0] = GET_PARAM | ABS_POS;
+    commands[1] = GET_PARAM | ABS_POS;
+    n_bytes[0] = 3;
+    n_bytes[1] = 3;
+    transfer();
+    // report abs_pos
+    Serial.write(":GET_PARAM | ABS_POS:\n")
+    Serial.write(values[0]);
+    Serial.write("\n");
+    Serial.write(values[1]);
+    Serial.write("\n");
+    reset_buffers();
+
+    // reset device
+    commands[0] = RESET_DEVICE;
+    commands[1] = RESET_DEVICE;
+    transfer();
+    // report status
+    Serial.write(":RESET_DEVICE:\n")
+    reset_buffers();
+
+    // SetParam
+    delay(5000);
 }
