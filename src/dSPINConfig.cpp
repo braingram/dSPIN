@@ -1,5 +1,6 @@
 #include "dSPIN.h"
 
+/*
 // Setup the SYNC/BUSY pin to be either SYNC or BUSY, and to a desired
 //  ticks per step level.
 void dSPIN::configSyncPin(byte pinFunc, byte syncSteps)
@@ -307,3 +308,4 @@ boolean dSPIN::getLoSpdOpt()
 {
   return (boolean) ((getParam(MIN_SPEED) & 0x00001000) != 0);
 }
+*/

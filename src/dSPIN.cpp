@@ -45,8 +45,11 @@ void dSPIN::SPIConfig()
   _delay_ms(5);
   digitalWrite(_resetPin, HIGH);
   _delay_ms(5);
+
+  resetBuffers();
 }
 
+/*
 int dSPIN::busyCheck(void)
 {
   if (_busyPin == -1)
@@ -60,3 +63,4 @@ int dSPIN::busyCheck(void)
     else                               return 1;
   }
 }
+*/

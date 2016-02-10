@@ -4,6 +4,90 @@
 #include "Arduino.h"
 #include "dSPINConstants.h"
 
+#ifndef NDSPINS
+  // define the number of dSPIN (L6470) chips daisy chained per CS line
+  // different CS lines can have multiple chips however all lines must
+  // have the same number of chips
+  //
+  // For example, the X-NUCLEO-IHM02A1 stepper shield has 2x daisy-chained
+  // L6470 chips. For 1 shield, leave NDSPINS as 2. These shields can be
+  // stacked with each shield having it's own chip select. For multiple
+  // shields, leave NDSPINS as 2 and make multiple instances of dSPIN
+  // (1 per CS line).
+  #define NDSPINS 2
+#endif
+
+class dSPIN
+{
+  // Interface to control multiple dSPIN chips daisy chained on a single
+  // CS line. dSPINs are ordered with index 0 being the last chip in the
+  // chain and NDSPINS-1 the first
+  // see NDSPINS to configure the number of chips per chain
+  public:
+    // Constructors. We'll ALWAYS want a CS pin and a reset pin, but we may
+    //  not want a busy pin. By using two constructors, we make it easy to
+    //  allow that.
+    dSPIN(int CSPin, int resetPin, int busyPin);
+    dSPIN(int CSPin, int resetPin);
+
+
+    //int busyCheck();
+    //int getStatus();
+
+    // Provide low level access to functions that setup and transfer
+    // command and value buffers to the dSPINs
+    void setCommand(byte index, byte command);
+    void setValue(byte index, unsigned long value);
+    void setValueByte(byte index, byte offset, byte value);
+    void setNBytes(byte index, byte n);
+    // Transfer currently queued commands
+    void transfer();
+    unsigned long getValue(byte index);
+    // clear buffers after a transfer, will overwrite any results
+    void resetBuffers();
+
+    //void setParam(byte param, unsigned long value);
+    //unsigned long getParam(byte param);
+
+    // Configuration commands
+    // Operational commands.
+  private:
+    void SPIConfig();
+
+    // Support functions for converting from user units to L6470 units
+    unsigned long accCalc(float stepsPerSecPerSec);
+    unsigned long decCalc(float stepsPerSecPerSec);
+    unsigned long minSpdCalc(float stepsPerSec);
+    unsigned long maxSpdCalc(float stepsPerSec);
+    unsigned long FSCalc(float stepsPerSec);
+    unsigned long intSpdCalc(float stepsPerSec);
+    unsigned long spdCalc(float stepsPerSec);
+
+    // Support functions for converting from L6470 to user units
+    float accParse(unsigned long stepsPerSecPerSec);
+    float decParse(unsigned long stepsPerSecPerSec);
+    float minSpdParse(unsigned long stepsPerSec);
+    float maxSpdParse(unsigned long stepsPerSec);
+    float FSParse(unsigned long stepsPerSec);
+    float intSpdParse(unsigned long stepsPerSec);
+    float spdParse(unsigned long stepsPerSec);
+
+    // Functions to change CS
+    void lowerCS();
+    void raiseCS();
+
+    int _CSPin;
+    int _resetPin;
+    int _busyPin;
+
+    // Transfer buffers for daisy-chained SPI messages
+    unsigned long values[NDSPINS];
+    byte commands[NDSPINS];
+    byte n_bytes[NDSPINS];
+};
+
+
+/*
 class dSPIN
 {
   public:
@@ -118,7 +202,7 @@ class dSPIN
     int _resetPin;
     int _busyPin;
 };
-
+*/
 // User constants for public functions.
 
 // dSPIN direction options: functions that accept dir as an argument can be

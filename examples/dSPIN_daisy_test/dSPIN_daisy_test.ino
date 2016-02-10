@@ -1,6 +1,6 @@
 #include <SPI.h>
 
-#define CS A2
+#define CS 2
 #define MOSI 11
 #define MISO 12
 #define SCK 13

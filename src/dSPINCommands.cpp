@@ -1,5 +1,5 @@
 #include "dSPIN.h"
-
+/*
 //commands.ino - Contains high-level command implementations- movement
 //   and configuration commands, for example.
 
@@ -238,3 +238,4 @@ int dSPIN::getStatus()
   bytePointer[0] = SPIXfer(0);
   return temp;
 }
+*/
