@@ -78,42 +78,75 @@ void dSPIN::setNBytes()
     // mask out GET_PARAM
     // 000xxxxx (set_param or noop)
     // 001xxxxx (get_param)
-    switch (commands[i] >> 5)
-    switch (commands[i] & 0x1F)
-    {
-      case ABS_POS:
-      case MARK:
-      case SPEED:
-        nBytes[i] = 3;
-        break;
-      case EL_POS:
-      case ACC:
-      case DECEL:
-      case MAX_SPEED:
-      case MIN_SPEED:
-      case FS_SPD:
-      case INT_SPD:
-      case CONFIG:
-      case STATUS:
-        nBytes[i] = 2;
-        break;
-      case KVAL_HOLD:
-      case KVAL_RUN:
-      case KVAL_ACC:
-      case KVAL_DEC:
-      case ST_SLP:
-      case FN_SLP_ACC:
-      case FN_SLP_DEC:
-      case K_THERM:
-      case ADC_OUT:
-      case STALL_TH:
-      case STEP_MODE:
-      case ALARM_EN:
-        nBytes[i] = 1;
-        break;
-      default:
-        nBytes[i] = 0;
-        break;
+    /*
+     * first check of (???xxxxx >> 5) > 1 [command vs param]
+     * then check against ???????x >> 1 [command type]
+    */
+    if ((commands[i] >> 5) < 2) {  // param
+      switch (commands[i] & 0x1F)
+      {
+        case ABS_POS:
+        case MARK:
+        case SPEED:
+          nBytes[i] = 3;
+          break;
+        case EL_POS:
+        case ACC:
+        case DECEL:
+        case MAX_SPEED:
+        case MIN_SPEED:
+        case FS_SPD:
+        case INT_SPD:
+        case CONFIG:
+        case STATUS:
+          nBytes[i] = 2;
+          break;
+        case KVAL_HOLD:
+        case KVAL_RUN:
+        case KVAL_ACC:
+        case KVAL_DEC:
+        case ST_SLP:
+        case FN_SLP_ACC:
+        case FN_SLP_DEC:
+        case K_THERM:
+        case ADC_OUT:
+        case STALL_TH:
+        case STEP_MODE:
+        case ALARM_EN:
+          nBytes[i] = 1;
+          break;
+        default:
+          nBytes[i] = 0;
+          break;
+      };
+    } else { // command
+      byte cmd = (commands[i] & 0xFE);
+      switch (cmd)
+      {
+        case RUN:
+        case MOVE:
+        case GOTO:
+        case GOTO_DIR:
+        case GO_UNTIL:  // TODO handle ACT
+        case GET_STATUS:
+          nBytes[i] = 2;
+          break;
+        case STEP_CLOCK:
+        case RELEASE_SW:  // TODO handle ACT
+        case GO_HOME:
+        case GO_MARK:
+        case RESET_POS:
+        case RESET_DEVICE:
+        case SOFT_STOP:
+        case HARD_STOP:
+        case SOFT_HIZ:
+        case HARD_HIZ:
+          nBytes[i] = 0;
+          break;
+        default:
+          nBytes[i] = 0;
+          break;
+      };
     };
  };
 };
