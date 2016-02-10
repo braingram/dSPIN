@@ -27,10 +27,10 @@ void setup() {
 
 void loop() {
     Serial.print("\n\n\n\n:::::Start of loop:::::\n");
-    dspin.setCommand(0, GET_STATUS);
-    dspin.setCommand(1, GET_STATUS);
-    dspin.setNBytes(0, 2);
-    dspin.setNBytes(1, 2);
+    dspin.setCommand(GET_STATUS, 0);
+    dspin.setCommand(GET_STATUS, 1);
+    dspin.setNBytes(2, 0);
+    dspin.setNBytes(2, 1);
     Serial.print(":STATUS:\n");
     dspin.transfer();
     Serial.print("v0=");
@@ -40,76 +40,66 @@ void loop() {
     Serial.print("\n");
     dspin.resetBuffers();
 
-    /*
     // get_param config
-    commands[0] = GET_PARAM | CONFIG;
-    commands[1] = GET_PARAM | CONFIG;
-    n_bytes[0] = 2;
-    n_bytes[1] = 2;
+    dspin.setCommand(GET_PARAM | CONFIG);
+    dspin.setNBytes(2);
     Serial.print(":GET_PARAM | CONFIG:\n");
-    transfer();
+    dspin.transfer();
     // report abs_pos
     Serial.print("v0=");
-    Serial.print(values[0], HEX);
+    Serial.print(dspin.getValue(0), HEX);
     Serial.print("\nv1=");
-    Serial.print(values[1], HEX);
+    Serial.print(dspin.getValue(1), HEX);
     Serial.print("\n");
-    reset_buffers();
+    dspin.resetBuffers();
 
     // get_param abs_pos
-    commands[0] = GET_PARAM | ABS_POS;
-    commands[1] = GET_PARAM | ABS_POS;
-    n_bytes[0] = 3;
-    n_bytes[1] = 3;
+    dspin.setCommand(GET_PARAM | ABS_POS);
+    dspin.setNBytes(3);
     Serial.print(":GET_PARAM | ABS_POS:\n");
-    transfer();
+    dspin.transfer();
     // report abs_pos
     Serial.print("v0=");
-    Serial.print(values[0], HEX);
+    Serial.print(dspin.getValue(0), HEX);
     Serial.print("\nv1=");
-    Serial.print(values[1], HEX);
+    Serial.print(dspin.getValue(1), HEX);
     Serial.print("\n");
-    reset_buffers();
+    dspin.resetBuffers();
 
     // set_param abs_pos
-    commands[0] = SET_PARAM | ABS_POS;
-    commands[1] = SET_PARAM | ABS_POS;
-    n_bytes[0] = 3;
-    n_bytes[1] = 3;
-    values[0] = 123456;
-    values[1] = 789012;
+    dspin.setCommand(SET_PARAM | ABS_POS);
+    dspin.setNBytes(3);
+    dspin.setValue(123456, 0);
+    dspin.setValue(789012, 1);
     Serial.print(":SET_PARAM | ABS_POS:\n");
     Serial.print("v0=");
-    Serial.print(values[0], HEX);
+    Serial.print(dspin.getValue(0), HEX);
     Serial.print("\nv1=");
-    Serial.print(values[1], HEX);
+    Serial.print(dspin.getValue(1), HEX);
     Serial.print("\n");
-    transfer();
-    reset_buffers();
+    dspin.transfer();
+    dspin.resetBuffers();
 
-     // get_param abs_pos
-    commands[0] = GET_PARAM | ABS_POS;
-    commands[1] = GET_PARAM | ABS_POS;
-    n_bytes[0] = 3;
-    n_bytes[1] = 3;
+    // get_param abs_pos
+    dspin.setCommand(GET_PARAM | ABS_POS);
+    dspin.setNBytes(3);
     Serial.print(":GET_PARAM | ABS_POS:\n");
-    transfer();
+    dspin.transfer();
     // report abs_pos
     Serial.print("v0=");
-    Serial.print(values[0], HEX);
+    Serial.print(dspin.getValue(0), HEX);
     Serial.print("\nv1=");
-    Serial.print(values[1], HEX);
+    Serial.print(dspin.getValue(1), HEX);
     Serial.print("\n");
-    reset_buffers();
+    dspin.resetBuffers();
 
     // reset device
-    commands[0] = RESET_DEVICE;
-    commands[1] = RESET_DEVICE;
+    dspin.setCommand(RESET_DEVICE);
     Serial.print(":RESET_DEVICE:\n");
-    transfer();
+    dspin.transfer();
     // report status
-    reset_buffers();
-*/
+    dspin.resetBuffers();
+
     digitalWrite(RESET, LOW);
     delay(5);
     digitalWrite(RESET, HIGH);

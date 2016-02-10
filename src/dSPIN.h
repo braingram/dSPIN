@@ -36,21 +36,131 @@ class dSPIN
 
     // Provide low level access to functions that setup and transfer
     // command and value buffers to the dSPINs
-    void setCommand(byte index, byte command);
-    void setValue(byte index, unsigned long value);
-    void setValueByte(byte index, byte offset, byte value);
-    void setNBytes(byte index, byte n);
+    void setCommand(byte command, byte index);
+    void setCommand(byte command);
+    void setValue(unsigned long value, byte index);
+    void setValue(unsigned long value);
+    void setValueByte(byte offset, byte value, byte index);
+    void setValueByte(byte offset, byte value);
+    void setNBytes(byte n, byte index);
+    void setNBytes(byte n);
+    void setNBytes();
     // Transfer currently queued commands
     void transfer();
     unsigned long getValue(byte index);
+    unsigned long getValue();
     // clear buffers after a transfer, will overwrite any results
     void resetBuffers();
 
-    //void setParam(byte param, unsigned long value);
-    //unsigned long getParam(byte param);
+    // Provide intermediate access to commands and params
+    void runCommand(byte command, unsigned long value, byte index);
+    void runCommand(byte command, unsigned long value);
+    void runCommand(byte command, byte index);
+    void runCommand(byte command);
+
+    void setParam(byte param, unsigned long value, byte index);
+    void setParam(byte param, unsigned long value);
+    unsigned long getParam(byte param, byte index);
 
     // Configuration commands
+    void setLoSpdOpt(boolean enable, byte index);
+    void setLoSpdOpt(boolean enable);
+    void configSyncPin(byte pinFunc, byte syncSteps, byte index);
+    void configSyncPin(byte pinFunc, byte syncSteps);
+    void configStepMode(byte stepMode, byte index);
+    void configStepMode(byte stepMode);
+    void setMaxSpeed(float stepsPerSecond, byte index);
+    void setMaxSpeed(float stepsPerSecond);
+    void setMinSpeed(float stepsPerSecond, byte index);
+    void setMinSpeed(float stepsPerSecond);
+    void setFullSpeed(float stepsPerSecond, byte index);
+    void setFullSpeed(float stepsPerSecond);
+    void setAcc(float stepsPerSecondPerSecond, byte index);
+    void setAcc(float stepsPerSecondPerSecond);
+    void setDec(float stepsPerSecondPerSecond, byte index);
+    void setDec(float stepsPerSecondPerSecond);
+    void setOCThreshold(byte threshold, byte index);
+    void setOCThreshold(byte threshold);
+    void setPWMFreq(int divisor, int multiplier, byte index);
+    void setPWMFreq(int divisor, int multiplier);
+    void setSlewRate(int slewRate, byte index);
+    void setSlewRate(int slewRate);
+    void setOCShutdown(int OCShutdown, byte index);
+    void setOCShutdown(int OCShutdown);
+    void setVoltageComp(int vsCompMode, byte index);
+    void setVoltageComp(int vsCompMode);
+    void setSwitchMode(int switchMode, byte index);
+    void setSwitchMode(int switchMode);
+    void setOscMode(int oscillatorMode, byte index);
+    void setOscMode(int oscillatorMode);
+    void setAccKVAL(byte kvalInput, byte index);
+    void setAccKVAL(byte kvalInput);
+    void setDecKVAL(byte kvalInput, byte index);
+    void setDecKVAL(byte kvalInput);
+    void setRunKVAL(byte kvalInput, byte index);
+    void setRunKVAL(byte kvalInput);
+    void setHoldKVAL(byte kvalInput, byte index);
+    void setHoldKVAL(byte kvalInput);
+
+    boolean getLoSpdOpt(byte index);
+    // getSyncPin
+    byte getStepMode(byte index);
+    float getMaxSpeed(byte index);
+    float getMinSpeed(byte index);
+    float getFullSpeed(byte index);
+    float getAcc(byte index);
+    float getDec(byte index);
+    byte getOCThreshold(byte index);
+    int getPWMFreqDivisor(byte index);
+    int getPWMFreqMultiplier(byte index);
+    int getSlewRate(byte index);
+    int getOCShutdown(byte index);
+    int getVoltageComp(byte index);
+    int getSwitchMode(byte index);
+    int getOscMode(byte index);
+    byte getAccKVAL(byte index);
+    byte getDecKVAL(byte index);
+    byte getRunKVAL(byte index);
+    byte getHoldKVAL(byte index);
+
     // Operational commands.
+    long getPos(byte index);
+    long getMark(byte index);
+    void run(byte dir, float stepsPerSec, byte index);
+    void run(byte dir, float stepsPerSec);
+    void stepClock(byte dir, byte index);
+    void stepClock(byte dir);
+    void move(byte dir, unsigned long numSteps, byte index);
+    void move(byte dir, unsigned long numSteps);
+    void goTo(long pos, byte index);
+    void goTo(long pos);
+    void goToDir(byte dir, long pos, byte index);
+    void goToDir(byte dir, long pos);
+    void goUntil(byte action, byte dir, float stepsPerSec, byte index);
+    void goUntil(byte action, byte dir, float stepsPerSec);
+    void releaseSw(byte action, byte dir, byte index);
+    void releaseSw(byte action, byte dir);
+    void goHome(byte index);
+    void goHome();
+    void goMark(byte index);
+    void goMark();
+    void setMark(long newMark, byte index);
+    void setMark(long newMark);
+    void setPos(long newPos, byte index);
+    void setPos(long newPos);
+    void resetPos(byte index);
+    void resetPos();
+    void resetDev(byte index);
+    void resetDev();
+    void softStop(byte index);
+    void softStop();
+    void hardStop(byte index);
+    void hardStop();
+    void softHiZ(byte index);
+    void softHiZ();
+    void hardHiZ(byte index);
+    void hardHiZ();
+
   private:
     void SPIConfig();
 
@@ -83,7 +193,7 @@ class dSPIN
     // Transfer buffers for daisy-chained SPI messages
     unsigned long values[NDSPINS];
     byte commands[NDSPINS];
-    byte n_bytes[NDSPINS];
+    byte nBytes[NDSPINS];
 };
 
 

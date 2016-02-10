@@ -22,25 +22,100 @@ void dSPIN::raiseCS()
   digitalWrite(_CSPin, HIGH);
 };
 
-void dSPIN::setCommand(byte index, byte command)
+void dSPIN::setCommand(byte command, byte index)
 {
   commands[index] = command;
 };
 
-void dSPIN::setValue(byte index, unsigned long value)
+void dSPIN::setCommand(byte command)
+{
+  for (byte i=0; i<NDSPINS; i++) {
+    setCommand(command, i);
+  };
+};
+
+void dSPIN::setValue(unsigned long value, byte index)
 {
   values[index] = value;
 };
 
-void dSPIN::setValueByte(byte index, byte offset, byte value)
+void dSPIN::setValue(unsigned long value)
+{
+  for (byte i=0; i<NDSPINS; i++) {
+    setValue(value, i);
+  };
+};
+
+void dSPIN::setValueByte(byte offset, byte value, byte index)
 {
   byte* bp = (byte*)&(values[index]);
   bp[offset] = value;
 };
 
-void dSPIN::setNBytes(byte index, byte n)
+void dSPIN::setValueByte(byte offset, byte value)
 {
-  n_bytes[index] = n;
+  for (byte i=0; i<NDSPINS; i++) {
+    setValueByte(offset, value, i);
+  };
+};
+
+void dSPIN::setNBytes(byte n, byte index)
+{
+  nBytes[index] = n;
+};
+
+void dSPIN::setNBytes(byte n)
+{
+  for (byte i=0; i<NDSPINS; i++) {
+    setNBytes(n, i);
+  };
+};
+
+void dSPIN::setNBytes()
+{
+  for (byte i=0; i<NDSPINS; i++) {
+    // TODO make this compatible with other commands
+    // mask out GET_PARAM
+    // 000xxxxx (set_param or noop)
+    // 001xxxxx (get_param)
+    switch (commands[i] >> 5)
+    switch (commands[i] & 0x1F)
+    {
+      case ABS_POS:
+      case MARK:
+      case SPEED:
+        nBytes[i] = 3;
+        break;
+      case EL_POS:
+      case ACC:
+      case DECEL:
+      case MAX_SPEED:
+      case MIN_SPEED:
+      case FS_SPD:
+      case INT_SPD:
+      case CONFIG:
+      case STATUS:
+        nBytes[i] = 2;
+        break;
+      case KVAL_HOLD:
+      case KVAL_RUN:
+      case KVAL_ACC:
+      case KVAL_DEC:
+      case ST_SLP:
+      case FN_SLP_ACC:
+      case FN_SLP_DEC:
+      case K_THERM:
+      case ADC_OUT:
+      case STALL_TH:
+      case STEP_MODE:
+      case ALARM_EN:
+        nBytes[i] = 1;
+        break;
+      default:
+        nBytes[i] = 0;
+        break;
+    };
+ };
 };
 
 // Transfer currently queued commands
@@ -50,7 +125,7 @@ void dSPIN::transfer()
   SPI.beginTransaction(settings);
 
   byte ret = 0;
-  byte max_n_bytes = 0;
+  byte maxNBytes = 0;
   byte i = 0;
   byte offset = 0;
   lowerCS();
@@ -71,18 +146,18 @@ void dSPIN::transfer()
       Serial.print('\n');
       #endif
       // find maximum number of bytes to send
-      max_n_bytes = max(max_n_bytes, abs(n_bytes[i]));
+      maxNBytes = max(maxNBytes, abs(nBytes[i]));
   };
   raiseCS();
   delayMicroseconds(1);  // TODO necessary?
 
   // 2) send/receive values
-  for (byte j=0; j < max_n_bytes; j++) {
+  for (byte j=0; j < maxNBytes; j++) {
       lowerCS();
       for (i=0; i < NDSPINS; i++) {
-          if (n_bytes[i] != 0) {
+          if (nBytes[i] != 0) {
               // byte offset to send/receive
-              offset = n_bytes[i] - 1;
+              offset = nBytes[i] - 1;
               // this command has either a value to send or receive
               // TODO one-line this?
               // extract byte to send
@@ -104,7 +179,7 @@ void dSPIN::transfer()
               #endif
               // save result
               bp[offset] = ret;
-              n_bytes[i] = offset;
+              nBytes[i] = offset;
           } else {
               ret = SPI.transfer(0);
           }
@@ -121,14 +196,73 @@ unsigned long dSPIN::getValue(byte index)
   return values[index];
 };
 
+unsigned long dSPIN::getValue()
+{
+  return getValue(0);
+};
+
 // clear buffers after a transfer, will overwrite any results
 void dSPIN::resetBuffers()
 {
   for (byte i=0; i<NDSPINS; i++) {
     values[i] = 0;
     commands[i] = 0;
-    n_bytes[i] = 0;
+    nBytes[i] = 0;
   };
+};
+
+void dSPIN::runCommand(byte command, unsigned long value, byte index)
+{
+  setCommand(command, index);
+  setValue(value, index);
+  setNBytes();
+  transfer();
+  resetBuffers();
+};
+
+void dSPIN::runCommand(byte command, unsigned long value)
+{
+  setCommand(command);
+  setValue(value);
+  setNBytes();
+  transfer();
+  resetBuffers();
+};
+
+void dSPIN::runCommand(byte command, byte index)
+{
+  setCommand(command, index);
+  setNBytes();
+  transfer();
+  resetBuffers();
+};
+
+void dSPIN::runCommand(byte command)
+{
+  setCommand(command);
+  setNBytes();
+  transfer();
+  resetBuffers();
+};
+
+void dSPIN::setParam(byte param, unsigned long value, byte index)
+{
+  runCommand(SET_PARAM | param, value, index);
+};
+
+void dSPIN::setParam(byte param, unsigned long value)
+{
+  runCommand(SET_PARAM | param, value);
+};
+
+unsigned long dSPIN::getParam(byte param, byte index)
+{
+  setCommand(GET_PARAM | param, index);
+  setNBytes();
+  transfer();
+  unsigned long retVal = getValue(index);
+  resetBuffers();
+  return retVal;
 };
 
 /*
