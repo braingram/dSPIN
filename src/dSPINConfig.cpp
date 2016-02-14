@@ -1,13 +1,12 @@
 #include "dSPIN.h"
 
-/*
 // Setup the SYNC/BUSY pin to be either SYNC or BUSY, and to a desired
 //  ticks per step level.
-void dSPIN::configSyncPin(byte pinFunc, byte syncSteps)
+void dSPIN::configSyncPin(byte pinFunc, byte syncSteps, byte index)
 {
   // Only some of the bits in this register are of interest to us; we need to
   //  clear those bits. It happens that they are the upper four.
-  byte syncPinConfig = (byte)getParam(STEP_MODE);
+  byte syncPinConfig = (byte)getParam(STEP_MODE, index);
   syncPinConfig &= 0x0F;
   
   // Now, let's OR in the arguments. We're going to mask the incoming
@@ -17,17 +16,25 @@ void dSPIN::configSyncPin(byte pinFunc, byte syncSteps)
   
   // Now we should be able to send that byte right back to the dSPIN- it
   //  won't corrupt the other bits, and the changes are made.
-  setParam(STEP_MODE, (unsigned long)syncPinConfig);
+  setParam(STEP_MODE, (unsigned long)syncPinConfig, index);
+}
+
+void dSPIN::configSyncPin(byte pinFunc, byte syncSteps)
+{
+  for (byte i=0; i<NDSPINS; i++)
+  {
+    configSyncPin(pinFunc, syncSteps, i);
+  };
 }
 
 // The dSPIN chip supports microstepping for a smoother ride. This function
 //  provides an easy front end for changing the microstepping mode.
-void dSPIN::configStepMode(byte stepMode)
+void dSPIN::configStepMode(byte stepMode, byte index)
 {
 
   // Only some of these bits are useful (the lower three). We'll extract the
   //  current contents, clear those three bits, then set them accordingly.
-  byte stepModeConfig = (byte)getParam(STEP_MODE);
+  byte stepModeConfig = (byte)getParam(STEP_MODE, index);
   stepModeConfig &= 0xF8;
   
   // Now we can OR in the new bit settings. Mask the argument so we don't
@@ -35,88 +42,131 @@ void dSPIN::configStepMode(byte stepMode)
   stepModeConfig |= (stepMode&0x07);
   
   // Now push the change to the chip.
-  setParam(STEP_MODE, (unsigned long)stepModeConfig);
+  setParam(STEP_MODE, (unsigned long)stepModeConfig, index);
 }
 
-byte dSPIN::getStepMode() {
-  return (byte)(getParam(STEP_MODE) & 0x07);
+void dSPIN::configStepMode(byte stepMode)
+{
+  for (byte i=0; i<NDSPINS; i++)
+  {
+    configStepMode(stepMode, i);
+  };
+}
+
+byte dSPIN::getStepMode(byte index) {
+  return (byte)(getParam(STEP_MODE) & 0x07, index);
 }
 
 // This is the maximum speed the dSPIN will attempt to produce.
-void dSPIN::setMaxSpeed(float stepsPerSecond)
+void dSPIN::setMaxSpeed(float stepsPerSecond, byte index)
 {
   // We need to convert the floating point stepsPerSecond into a value that
   //  the dSPIN can understand. Fortunately, we have a function to do that.
   unsigned long integerSpeed = maxSpdCalc(stepsPerSecond);
   
   // Now, we can set that paramter.
+  setParam(MAX_SPEED, integerSpeed, index);
+}
+
+void dSPIN::setMaxSpeed(float stepsPerSecond)
+{
+  unsigned long integerSpeed = maxSpdCalc(stepsPerSecond);
   setParam(MAX_SPEED, integerSpeed);
 }
 
-
-float dSPIN::getMaxSpeed()
+float dSPIN::getMaxSpeed(byte index)
 {
-  return maxSpdParse(getParam(MAX_SPEED));
+  return maxSpdParse(getParam(MAX_SPEED, index));
 }
 
 // Set the minimum speed allowable in the system. This is the speed a motion
 //  starts with; it will then ramp up to the designated speed or the max
 //  speed, using the acceleration profile.
-void dSPIN::setMinSpeed(float stepsPerSecond)
+void dSPIN::setMinSpeed(float stepsPerSecond, byte index)
 {
   // We need to convert the floating point stepsPerSecond into a value that
   //  the dSPIN can understand. Fortunately, we have a function to do that.
   unsigned long integerSpeed = minSpdCalc(stepsPerSecond);
   
   // MIN_SPEED also contains the LSPD_OPT flag, so we need to protect that.
-  unsigned long temp = getParam(MIN_SPEED) & 0x00001000;
+  unsigned long temp = getParam(MIN_SPEED, index) & 0x00001000;
   
   // Now, we can set that paramter.
-  setParam(MIN_SPEED, integerSpeed | temp);
+  setParam(MIN_SPEED, integerSpeed | temp, index);
 }
 
-float dSPIN::getMinSpeed()
+void dSPIN::setMinSpeed(float stepsPerSecond)
 {
-  return minSpdParse(getParam(MIN_SPEED));
+  for (byte i=0; i<NDSPINS; i++) {
+    setMinSpeed(stepsPerSecond, i);
+  }
+}
+
+float dSPIN::getMinSpeed(byte index)
+{
+  return minSpdParse(getParam(MIN_SPEED, index));
 }
 
 // Above this threshold, the dSPIN will cease microstepping and go to full-step
 //  mode. 
+void dSPIN::setFullSpeed(float stepsPerSecond, byte index)
+{
+  unsigned long integerSpeed = FSCalc(stepsPerSecond);
+  setParam(FS_SPD, integerSpeed, index);
+}
+
 void dSPIN::setFullSpeed(float stepsPerSecond)
 {
   unsigned long integerSpeed = FSCalc(stepsPerSecond);
   setParam(FS_SPD, integerSpeed);
 }
 
-float dSPIN::getFullSpeed()
+float dSPIN::getFullSpeed(byte index)
 {
-  return FSParse(getParam(FS_SPD));
+  return FSParse(getParam(FS_SPD, index));
 }
 
 // Set the acceleration rate, in steps per second per second. This value is
 //  converted to a dSPIN friendly value. Any value larger than 29802 will
 //  disable acceleration, putting the chip in "infinite" acceleration mode.
+void dSPIN::setAcc(float stepsPerSecondPerSecond, byte index)
+{
+  unsigned long integerAcc = accCalc(stepsPerSecondPerSecond);
+  setParam(ACC, integerAcc, index);
+}
+
 void dSPIN::setAcc(float stepsPerSecondPerSecond)
 {
   unsigned long integerAcc = accCalc(stepsPerSecondPerSecond);
   setParam(ACC, integerAcc);
 }
 
-float dSPIN::getAcc()
+float dSPIN::getAcc(byte index)
 {
-  return accParse(getParam(ACC));
+  return accParse(getParam(ACC, index));
 }
 
 // Same rules as setAcc().
+void dSPIN::setDec(float stepsPerSecondPerSecond, byte index)
+{
+  unsigned long integerDec = decCalc(stepsPerSecondPerSecond);
+  setParam(DECEL, integerDec, index);
+}
+
 void dSPIN::setDec(float stepsPerSecondPerSecond)
 {
   unsigned long integerDec = decCalc(stepsPerSecondPerSecond);
   setParam(DECEL, integerDec);
 }
 
-float dSPIN::getDec()
+float dSPIN::getDec(byte index)
 {
-  return accParse(getParam(DECEL));
+  return accParse(getParam(DECEL, index));
+}
+
+void dSPIN::setOCThreshold(byte threshold, byte index)
+{
+  setParam(OCD_TH, 0x0F & threshold, byte index);
 }
 
 void dSPIN::setOCThreshold(byte threshold)
@@ -124,9 +174,9 @@ void dSPIN::setOCThreshold(byte threshold)
   setParam(OCD_TH, 0x0F & threshold);
 }
 
-byte dSPIN::getOCThreshold()
+byte dSPIN::getOCThreshold(byte index)
 {
-  return (byte) (getParam(OCD_TH) & 0xF);
+  return (byte) (getParam(OCD_TH, index) & 0xF);
 }
 
 // The next few functions are all breakouts for individual options within the
@@ -137,9 +187,9 @@ byte dSPIN::getOCThreshold()
 //  Divisors of 1-7 are available; multipliers of .625-2 are available. See
 //  datasheet for more details; it's not clear what the frequency being
 //  multiplied/divided here is, but it is clearly *not* the actual clock freq.
-void dSPIN::setPWMFreq(int divisor, int multiplier)
+void dSPIN::setPWMFreq(int divisor, int multiplier, byte index)
 {
-  unsigned long configVal = getParam(CONFIG);
+  unsigned long configVal = getParam(CONFIG, index);
   
   // The divisor is set by config 15:13, so mask 0xE000 to clear them.
   configVal &= ~(0xE000);
@@ -147,84 +197,124 @@ void dSPIN::setPWMFreq(int divisor, int multiplier)
   configVal &= ~(0x1C00);
   // Now we can OR in the masked-out versions of the values passed in.
   configVal |= ((0xE000&divisor)|(0x1C00&multiplier));
-  setParam(CONFIG, configVal);
+  setParam(CONFIG, configVal, index);
 }
 
-int dSPIN::getPWMFreqDivisor()
+void dSPIN::setPWMFreq(int divisor, int multiplier)
 {
-  return (int) (getParam(CONFIG) & 0xE000);
+  for (byte i=0; i<NDSPINS; i++)
+  {
+    setPWMFreq(divisor, multiplier, i);
+  }
 }
 
-int dSPIN::getPWMFreqMultiplier()
+int dSPIN::getPWMFreqDivisor(byte index)
 {
-  return (int) (getParam(CONFIG) & 0x1C00);
+  return (int) (getParam(CONFIG, index) & 0xE000);
+}
+
+int dSPIN::getPWMFreqMultiplier(byte index)
+{
+  return (int) (getParam(CONFIG, index) & 0x1C00);
 }
 
 // Slew rate of the output in V/us. Can be 180, 290, or 530.
-void dSPIN::setSlewRate(int slewRate)
+void dSPIN::setSlewRate(int slewRate, byte index)
 {
-  unsigned long configVal = getParam(CONFIG);
+  unsigned long configVal = getParam(CONFIG, index);
   
   // These bits live in CONFIG 9:8, so the mask is 0x0300.
   configVal &= ~(0x0300);
   //Now, OR in the masked incoming value.
   configVal |= (0x0300&slewRate);
-  setParam(CONFIG, configVal);
+  setParam(CONFIG, configVal, index);
 }
 
-int dSPIN::getSlewRate()
+void dSPIN::setSlewRate(int slewRate)
 {
-  return (int) (getParam(CONFIG) & 0x0300);
+  for (byte i=0; i<NDSPINS; i++)
+  {
+    setSlewRate(slewRate, i);
+  }
+}
+
+int dSPIN::getSlewRate(byte index)
+{
+  return (int) (getParam(CONFIG, index) & 0x0300);
 }
 
 // Single bit- do we shutdown the drivers on overcurrent or not?
-void dSPIN::setOCShutdown(int OCShutdown)
+void dSPIN::setOCShutdown(int OCShutdown, byte index)
 {
-  unsigned long configVal = getParam(CONFIG);
+  unsigned long configVal = getParam(CONFIG, index);
   // This bit is CONFIG 7, mask is 0x0080
   configVal &= ~(0x0080);
   //Now, OR in the masked incoming value.
-  configVal |= (0x0080&OCShutdown);
-  setParam(CONFIG, configVal);
+  configVal |= (0x0080 & OCShutdown);
+  setParam(CONFIG, configVal, index);
 }
 
-int dSPIN::getOCShutdown()
+void dSPIN::setOCShutdown(int OCShutdown)
 {
-  return (int) (getParam(CONFIG) & 0x0080);
+  for (byte i=0; i<NDSPINS; i++)
+  {
+    setOCShutdown(OCShutdown, i);
+  }
+}
+
+int dSPIN::getOCShutdown(byte index)
+{
+  return (int) (getParam(CONFIG, index) & 0x0080);
 }
 
 // Enable motor voltage compensation? Not at all straightforward- check out
 //  p34 of the datasheet.
-void dSPIN::setVoltageComp(int vsCompMode)
+void dSPIN::setVoltageComp(int vsCompMode, byte index)
 {
-  unsigned long configVal = getParam(CONFIG);
+  unsigned long configVal = getParam(CONFIG, index);
   // This bit is CONFIG 5, mask is 0x0020
   configVal &= ~(0x0020);
   //Now, OR in the masked incoming value.
-  configVal |= (0x0020&vsCompMode);
-  setParam(CONFIG, configVal);
+  configVal |= (0x0020 & vsCompMode);
+  setParam(CONFIG, configVal, index);
 }
 
-int dSPIN::getVoltageComp()
+void dSPIN::setVoltageComp(int vsCompMode)
 {
-  return (int) (getParam(CONFIG) & 0x0020);
+  for (byte i=0; i<NDSPINS; i++)
+  {
+    setVoltageComp(vsCompMode, i);
+  }
+}
+
+int dSPIN::getVoltageComp(byte index)
+{
+  return (int) (getParam(CONFIG, index) & 0x0020);
 }
 
 // The switch input can either hard-stop the driver _or_ activate an interrupt.
 //  This bit allows you to select what it does.
-void dSPIN::setSwitchMode(int switchMode)
+void dSPIN::setSwitchMode(int switchMode, byte index)
 {
-  unsigned long configVal = getParam(CONFIG);
+  unsigned long configVal = getParam(CONFIG, index);
   // This bit is CONFIG 4, mask is 0x0010
   configVal &= ~(0x0100);
   //Now, OR in the masked incoming value.
-  configVal |= (0x0100&switchMode);
-  setParam(CONFIG, configVal);
+  configVal |= (0x0100 & switchMode);
+  setParam(CONFIG, configVal, index);
 }
 
-int dSPIN::getSwitchMode()
+void dSPIN::setSwitchMode(int switchMode)
 {
-  return (int) (getParam(CONFIG) & 0x0100);
+  for (byte i=0; i<NDSPINS; i++)
+  {
+    setSwitchMode(switchMode, i);
+  }
+}
+
+int dSPIN::getSwitchMode(byte index)
+{
+  return (int) (getParam(CONFIG, index) & 0x0100);
 }
 
 // There are a number of clock options for this chip- it can be configured to
@@ -233,19 +323,27 @@ int dSPIN::getSwitchMode()
 //  frequency you want to drive it; practically, this library assumes it's
 //  being driven at 16MHz. Also, the device will use these bits to set the
 //  math used to figure out steps per second and stuff like that.
-void dSPIN::setOscMode(int oscillatorMode)
+void dSPIN::setOscMode(int oscillatorMode, byte index)
 {
-  unsigned long configVal = getParam(CONFIG);
+  unsigned long configVal = getParam(CONFIG, index);
   // These bits are CONFIG 3:0, mask is 0x000F
   configVal &= ~(0x000F);
   //Now, OR in the masked incoming value.
-  configVal |= (0x000F&oscillatorMode);
-  setParam(CONFIG, configVal);
+  configVal |= (0x000F & oscillatorMode);
+  setParam(CONFIG, configVal, index);
 }
 
-int dSPIN::getOscMode()
+void dSPIN::setOscMode(int oscillatorMode)
 {
-  return (int) (getParam(CONFIG) & 0x000F);
+  for (byte i=0; i<NDSPINS; i++)
+  {
+    setOscMode(oscillatorMode, i);
+  }
+}
+
+int dSPIN::getOscMode(byte index)
+{
+  return (int) (getParam(CONFIG, index) & 0x000F);
 }
 
 // The KVAL registers are...weird. I don't entirely understand how they differ
@@ -253,14 +351,24 @@ int dSPIN::getOscMode()
 //  tweaking KVAL has proven effective in the past. There's a separate register
 //  for each case: running, static, accelerating, and decelerating.
 
+void dSPIN::setAccKVAL(byte kvalInput, byte index)
+{
+  setParam(KVAL_ACC, kvalInput, index);
+}
+
 void dSPIN::setAccKVAL(byte kvalInput)
 {
   setParam(KVAL_ACC, kvalInput);
 }
 
-byte dSPIN::getAccKVAL()
+byte dSPIN::getAccKVAL(byte index)
 {
-  return (byte) getParam(KVAL_ACC);
+  return (byte) getParam(KVAL_ACC, index);
+}
+
+void dSPIN::setDecKVAL(byte kvalInput, byte index)
+{
+  setParam(KVAL_DEC, kvalInput, index);
 }
 
 void dSPIN::setDecKVAL(byte kvalInput)
@@ -268,9 +376,14 @@ void dSPIN::setDecKVAL(byte kvalInput)
   setParam(KVAL_DEC, kvalInput);
 }
 
-byte dSPIN::getDecKVAL()
+byte dSPIN::getDecKVAL(byte index)
 {
-  return (byte) getParam(KVAL_DEC);
+  return (byte) getParam(KVAL_DEC, index);
+}
+
+void dSPIN::setRunKVAL(byte kvalInput, byte index)
+{
+  setParam(KVAL_RUN, kvalInput, index);
 }
 
 void dSPIN::setRunKVAL(byte kvalInput)
@@ -278,9 +391,14 @@ void dSPIN::setRunKVAL(byte kvalInput)
   setParam(KVAL_RUN, kvalInput);
 }
 
-byte dSPIN::getRunKVAL()
+byte dSPIN::getRunKVAL(byte index)
 {
-  return (byte) getParam(KVAL_RUN);
+  return (byte) getParam(KVAL_RUN, index);
+}
+
+void dSPIN::setHoldKVAL(byte kvalInput, byte index)
+{
+  setParam(KVAL_HOLD, kvalInput, index);
 }
 
 void dSPIN::setHoldKVAL(byte kvalInput)
@@ -288,24 +406,31 @@ void dSPIN::setHoldKVAL(byte kvalInput)
   setParam(KVAL_HOLD, kvalInput);
 }
 
-byte dSPIN::getHoldKVAL()
+byte dSPIN::getHoldKVAL(byte index)
 {
-  return (byte) getParam(KVAL_HOLD);
+  return (byte) getParam(KVAL_HOLD, index);
 }
 
 // Enable or disable the low-speed optimization option. With LSPD_OPT enabled,
 //  motion starts from 0 instead of MIN_SPEED and low-speed optimization keeps
 //  the driving sine wave prettier than normal until MIN_SPEED is reached.
-void dSPIN::setLoSpdOpt(boolean enable)
+void dSPIN::setLoSpdOpt(boolean enable, byte index)
 {
-  unsigned long temp = getParam(MIN_SPEED);
+  unsigned long temp = getParam(MIN_SPEED, index);
   if (enable) temp |= 0x00001000; // Set the LSPD_OPT bit
   else        temp &= 0xffffefff; // Clear the LSPD_OPT bit
-  setParam(MIN_SPEED, temp);
+  setParam(MIN_SPEED, temp, index);
 }
 
-boolean dSPIN::getLoSpdOpt()
+void dSPIN::setLoSpdOpt(boolean enable)
 {
-  return (boolean) ((getParam(MIN_SPEED) & 0x00001000) != 0);
+  for (byte i=0; i<NDSPINS; i++)
+  {
+    setLoSpdOpt(enable, i);
+  }
 }
-*/
+
+boolean dSPIN::getLoSpdOpt(byte index)
+{
+  return (boolean) ((getParam(MIN_SPEED, index) & 0x00001000) != 0);
+}

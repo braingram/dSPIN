@@ -63,8 +63,6 @@ class dSPIN
     unsigned long getParam(byte param, byte index);
 
     // Configuration commands
-    void setLoSpdOpt(boolean enable, byte index);
-    void setLoSpdOpt(boolean enable);
     void configSyncPin(byte pinFunc, byte syncSteps, byte index);
     void configSyncPin(byte pinFunc, byte syncSteps);
     void configStepMode(byte stepMode, byte index);
@@ -79,6 +77,8 @@ class dSPIN
     void setAcc(float stepsPerSecondPerSecond);
     void setDec(float stepsPerSecondPerSecond, byte index);
     void setDec(float stepsPerSecondPerSecond);
+    void setLoSpdOpt(boolean enable, byte index);
+    void setLoSpdOpt(boolean enable);
     void setOCThreshold(byte threshold, byte index);
     void setOCThreshold(byte threshold);
     void setPWMFreq(int divisor, int multiplier, byte index);
