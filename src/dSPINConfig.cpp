@@ -54,7 +54,7 @@ void dSPIN::configStepMode(byte stepMode)
 }
 
 byte dSPIN::getStepMode(byte index) {
-  return (byte)(getParam(STEP_MODE) & 0x07, index);
+  return (byte)(getParam(STEP_MODE, index) & 0x07);
 }
 
 // This is the maximum speed the dSPIN will attempt to produce.
@@ -166,7 +166,7 @@ float dSPIN::getDec(byte index)
 
 void dSPIN::setOCThreshold(byte threshold, byte index)
 {
-  setParam(OCD_TH, 0x0F & threshold, byte index);
+  setParam(OCD_TH, 0x0F & threshold, index);
 }
 
 void dSPIN::setOCThreshold(byte threshold)

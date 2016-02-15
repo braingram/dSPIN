@@ -1,6 +1,8 @@
+#include <SPI.h>
 #include <dSPIN.h>
 
-#define CS 2
+//#define CS 2
+#define CS A2
 #define MOSI 11
 #define MISO 12
 #define SCK 13

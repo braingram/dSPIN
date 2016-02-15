@@ -10,6 +10,9 @@
 dSPIN::dSPIN(int CSPin, int resetPin, int busyPin)
 {
   _CSPin = CSPin;
+  _cs_mask = digitalPinToBitMask(_CSPin);
+  _cs_port = digitalPinToPort(_CSPin);
+  _cs_reg = portOutputRegister(_cs_port);
   _resetPin = resetPin;
   _busyPin = busyPin;
   
@@ -19,6 +22,9 @@ dSPIN::dSPIN(int CSPin, int resetPin, int busyPin)
 dSPIN::dSPIN(int CSPin, int resetPin)
 {
   _CSPin = CSPin;
+  _cs_mask = digitalPinToBitMask(_CSPin);
+  _cs_port = digitalPinToPort(_CSPin);
+  _cs_reg = portOutputRegister(_cs_port);
   _resetPin = resetPin;
   _busyPin = -1;
 
@@ -27,7 +33,6 @@ dSPIN::dSPIN(int CSPin, int resetPin)
 
 void dSPIN::SPIConfig()
 {
-  // TODO lookup pin ports and masks for faster access
   pinMode(MOSI, OUTPUT);
   pinMode(MISO, INPUT);
   pinMode(SCK, OUTPUT);

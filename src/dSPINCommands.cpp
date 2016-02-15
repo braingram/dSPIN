@@ -38,7 +38,7 @@ void dSPIN::run(byte dir, float stepsPerSec, byte index)
   unsigned long integerSpeed = spdCalc(stepsPerSec);
   if (integerSpeed > 0xFFFFF) integerSpeed = 0xFFFFF;
   setCommand(RUN | dir, index);
-  setNBytes(2, index);
+  setNBytes(3, index);
   setValue(integerSpeed, index);
   transfer();
   resetBuffers();
@@ -49,7 +49,7 @@ void dSPIN::run(byte dir, float stepsPerSec)
   unsigned long integerSpeed = spdCalc(stepsPerSec);
   if (integerSpeed > 0xFFFFF) integerSpeed = 0xFFFFF;
   setCommand(RUN | dir);
-  setNBytes(2);
+  setNBytes(3);
   setValue(integerSpeed);
   transfer();
   resetBuffers();
@@ -78,7 +78,7 @@ void dSPIN::move(byte dir, unsigned long numSteps, byte index)
 {
   if (numSteps > 0x3FFFFF) numSteps = 0x3FFFFF;
   setCommand(MOVE | dir, index);
-  setNBytes(2, index);
+  setNBytes(3, index);
   setValue(numSteps, index);
   transfer();
   resetBuffers();
@@ -88,7 +88,7 @@ void dSPIN::move(byte dir, unsigned long numSteps)
 {
   if (numSteps > 0x3FFFFF) numSteps = 0x3FFFFF;
   setCommand(MOVE | dir);
-  setNBytes(2);
+  setNBytes(3);
   setValue(numSteps);
   transfer();
   resetBuffers();
@@ -101,7 +101,7 @@ void dSPIN::goTo(long pos, byte index)
 {
   if (pos > 0x3FFFFF) pos = 0x3FFFFF;
   setCommand(GOTO, index);
-  setNBytes(2, index);
+  setNBytes(3, index);
   setValue(pos, index);
   transfer();
   resetBuffers();
@@ -111,7 +111,7 @@ void dSPIN::goTo(long pos)
 {
   if (pos > 0x3FFFFF) pos = 0x3FFFFF;
   setCommand(GOTO);
-  setNBytes(2);
+  setNBytes(3);
   setValue(pos);
   transfer();
   resetBuffers();
@@ -122,7 +122,7 @@ void dSPIN::goToDir(byte dir, long pos, byte index)
 {
   if (pos > 0x3FFFFF) pos = 0x3FFFFF;
   setCommand(GOTO_DIR | dir, index);
-  setNBytes(2, index);
+  setNBytes(3, index);
   setValue(pos, index);
   transfer();
   resetBuffers();
@@ -132,7 +132,7 @@ void dSPIN::goToDir(byte dir, long pos)
 {
   if (pos > 0x3FFFFF) pos = 0x3FFFFF;
   setCommand(GOTO_DIR | dir);
-  setNBytes(2);
+  setNBytes(3);
   setValue(pos);
   transfer();
   resetBuffers();
@@ -149,7 +149,7 @@ void dSPIN::goUntil(byte action, byte dir, float stepsPerSec, byte index)
   unsigned long integerSpeed = spdCalc(stepsPerSec);
   if (integerSpeed > 0x3FFFFF) integerSpeed = 0x3FFFFF;
   setCommand(GO_UNTIL | dir, index);
-  setNBytes(2, index);
+  setNBytes(3, index);
   setValue(integerSpeed, index);
   transfer();
   resetBuffers();
@@ -160,7 +160,7 @@ void dSPIN::goUntil(byte action, byte dir, float stepsPerSec)
   unsigned long integerSpeed = spdCalc(stepsPerSec);
   if (integerSpeed > 0x3FFFFF) integerSpeed = 0x3FFFFF;
   setCommand(GO_UNTIL | dir);
-  setNBytes(2);
+  setNBytes(3);
   setValue(integerSpeed);
   transfer();
   resetBuffers();
@@ -299,17 +299,15 @@ void dSPIN::hardHiZ()
   runCommand(HARD_HIZ);
 }
 
-/*
 // Fetch and return the 16-bit value in the STATUS register. Resets
 //  any warning flags and exits any error states. Using GetParam()
 //  to read STATUS does not clear these values.
-int dSPIN::getStatus()
+int dSPIN::getStatus(byte index)
 {
-  int temp = 0;
-  byte* bytePointer = (byte*)&temp;
-  SPIXfer(GET_STATUS);
-  bytePointer[1] = SPIXfer(0);
-  bytePointer[0] = SPIXfer(0);
+  setCommand(GET_STATUS, index);
+  setNBytes(2);
+  transfer();
+  int temp = getValue(index);
+  resetBuffers();
   return temp;
 }
-*/
