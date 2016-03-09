@@ -34,6 +34,8 @@ class dSPIN
 
 
     //int busyCheck();
+    int getBusy();
+    int getBusy(byte index);
     int getStatus(byte index);
 
     // Provide low level access to functions that setup and transfer

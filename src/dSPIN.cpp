@@ -54,18 +54,40 @@ void dSPIN::SPIConfig()
   resetBuffers();
 }
 
-/*
-int dSPIN::busyCheck(void)
+
+int dSPIN::getBusy()
 {
   if (_busyPin == -1)
   {
-    if (getParam(STATUS) & 0x0002) return 0;
-    else                           return 1;
+    // check all NDSPINS
+    for (byte i=0; i<NDSPINS; i++) {
+      // if any are busy, return busy
+      if (getBusy(i)) return 1;
+    }
+    // if not, return not busy
+    return 0;
   }
-  else 
+  else
   {
-    if (digitalRead(_busyPin) == HIGH) return 0;
-    else                               return 1;
+    if (digitalRead(_busyPin) == HIGH)
+    {
+      return 0;
+    }
+    else
+    {
+      return 1;
+    }
   }
 }
-*/
+
+int dSPIN::getBusy(byte index)
+{
+  if (getParam(STATUS, index) & 0x0002)
+  {
+    return 0;
+  }
+  else
+  {
+    return 1;
+  }
+}
