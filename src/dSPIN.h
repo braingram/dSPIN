@@ -85,6 +85,8 @@ class dSPIN
     void setLoSpdOpt(boolean enable);
     void setOCThreshold(byte threshold, byte index);
     void setOCThreshold(byte threshold);
+    void setStallThreshold(byte threshold, byte index);
+    void setStallThreshold(byte threshold);
     void setPWMFreq(int divisor, int multiplier, byte index);
     void setPWMFreq(int divisor, int multiplier);
     void setSlewRate(int slewRate, byte index);
@@ -115,6 +117,7 @@ class dSPIN
     float getAcc(byte index);
     float getDec(byte index);
     byte getOCThreshold(byte index);
+    byte getStallThreshold(byte index);
     int getPWMFreqDivisor(byte index);
     int getPWMFreqMultiplier(byte index);
     int getSlewRate(byte index);

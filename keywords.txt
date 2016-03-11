@@ -78,7 +78,7 @@ EXT_32MHZ_OSCOUT_INVERT	LITERAL1
 
 # Public functions
 dSPIN	KEYWORD2
-busyCheck	KEYWORD2
+getBusy	KEYWORD2
 getStatus	KEYWORD2
 setParam	KEYWORD2
 getParam	KEYWORD2
@@ -91,6 +91,7 @@ setFullSpeed	KEYWORD2
 setAcc	KEYWORD2
 setDec	KEYWORD2
 setOCThreshold	KEYWORD2
+setStallThreshold	KEYWORD2
 setPWMFreq	KEYWORD2
 setSlewRate	KEYWORD2
 setOCShutdown	KEYWORD2
@@ -109,6 +110,7 @@ getFullSpeed	KEYWORD2
 getAcc	KEYWORD2
 getDec	KEYWORD2
 getOCThreshold	KEYWORD2
+getStallThreshold	KEYWORD2
 getPWMFreqDivisor	KEYWORD2
 getPWMFreqMultiplier	KEYWORD2
 getSlewRate	KEYWORD2
@@ -142,4 +144,4 @@ hardHiZ	KEYWORD2
 
 
 # Class names and data types
-AutoDriver	KEYWORD1
+dSPIN	KEYWORD1

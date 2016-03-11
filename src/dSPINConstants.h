@@ -4,7 +4,7 @@
 // Constant definitions provided by ST
 
 // constant definitions for overcurrent thresholds. Write these values to 
-//  register OCD_TH to set the level at which an overcurrent even occurs.
+//  register OCD_TH to set the level at which an overcurrent event occurs.
 #define OCD_TH_375mA  0x00
 #define OCD_TH_750mA  0x01
 #define OCD_TH_1125mA 0x02

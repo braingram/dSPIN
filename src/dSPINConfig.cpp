@@ -179,6 +179,21 @@ byte dSPIN::getOCThreshold(byte index)
   return (byte) (getParam(OCD_TH, index) & 0xF);
 }
 
+void dSPIN::setStallThreshold(byte threshold, byte index)
+{
+  setParam(STALL_TH, 0x3F & threshold, index);
+}
+
+void dSPIN::setStallThreshold(byte threshold)
+{
+  setParam(STALL_TH, 0x3F & threshold);
+}
+
+byte dSPIN::getStallThreshold(byte index)
+{
+  return (byte) (getParam(STALL_TH, index) & 0x3F);
+}
+
 // The next few functions are all breakouts for individual options within the
 //  single register CONFIG. We'll read CONFIG, blank some bits, then OR in the
 //  new value.
