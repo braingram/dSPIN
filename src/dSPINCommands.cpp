@@ -15,6 +15,28 @@ long dSPIN::getPos(byte index)
 };
 
 
+// Returns the content of the SPEED register, in steps per second as a float
+float dSPIN::getSpeed(byte index)
+{
+  return spdParse(getParam(SPEED, index));
+};
+
+
+// Returns the current motor direction (as read from the STATUS_DIR bit of the STATUS register)
+//  1 = FORWARD
+//  0 = REVERSE
+byte dSPIN::getDir(byte index)
+{
+  if (getParam(STATUS, index) & STATUS_DIR) {
+    return 1;
+  }
+  else
+  {
+    return 0;
+  };
+};
+
+
 // Just like getPos(), but for MARK.
 long dSPIN::getMark(byte index)
 {

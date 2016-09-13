@@ -132,6 +132,8 @@ class dSPIN
 
     // Operational commands.
     long getPos(byte index);
+    float getSpeed(byte index);
+    byte getDir(byte index);
     long getMark(byte index);
     void run(byte dir, float stepsPerSec, byte index);
     void run(byte dir, float stepsPerSec);
