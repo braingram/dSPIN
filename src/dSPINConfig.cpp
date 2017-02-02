@@ -329,7 +329,7 @@ void dSPIN::setSwitchMode(int switchMode)
 
 int dSPIN::getSwitchMode(byte index)
 {
-  return (int) (getParam(CONFIG, index) & 0x0100);
+  return (int) (getParam(CONFIG, index) & 0x0010);
 }
 
 // There are a number of clock options for this chip- it can be configured to
