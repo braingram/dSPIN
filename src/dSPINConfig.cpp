@@ -313,9 +313,9 @@ void dSPIN::setSwitchMode(int switchMode, byte index)
 {
   unsigned long configVal = getParam(CONFIG, index);
   // This bit is CONFIG 4, mask is 0x0010
-  configVal &= ~(0x0100);
+  configVal &= ~(0x0010);
   //Now, OR in the masked incoming value.
-  configVal |= (0x0100 & switchMode);
+  configVal |= (0x0010 & switchMode);
   setParam(CONFIG, configVal, index);
 }
 
