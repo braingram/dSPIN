@@ -17,6 +17,11 @@
   #define NDSPINS 2
 #endif
 
+#if !defined(ARDUINO_ARCH_SAM) && !defined(ARDUINO_ARCH_SAMD) && !defined(ESP8266) && !defined(ARDUINO_ARCH_STM32F2)
+#define REG_TYPE byte
+#else
+#define REG_TYPE unsigned int
+#endif
 //#define DSPIN_DEBUG 1
 
 class dSPIN
@@ -195,9 +200,9 @@ class dSPIN
     void lowerCS();
     void raiseCS();
 
-    byte _cs_mask;
-    byte _cs_port;
-    volatile byte * _cs_reg;
+    REG_TYPE _cs_mask;
+    REG_TYPE _cs_port;
+    volatile REG_TYPE * _cs_reg;
     int _CSPin;
     int _resetPin;
     int _busyPin;

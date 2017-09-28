@@ -1,18 +1,23 @@
 #include <SPI.h>
 #include "dSPIN.h"
+#if !defined(ARDUINO_ARCH_SAM) && !defined(ARDUINO_ARCH_SAMD) && !defined(ESP8266) && !defined(ARDUINO_ARCH_STM32F2)
 #include "util/delay.h" // Turns out, using the Arduino "delay" function
                         //  in a library constructor causes the program to
                         //  hang if the constructor is invoked outside of
                         //  setup() or hold() (i.e., the user attempts to
                         //  create a global of the class.
+#define DELAY(X) _delay_ms(X)
+#else
+#define DELAY(X) delay(X)
+#endif
 
 // Constructors
 dSPIN::dSPIN(int CSPin, int resetPin, int busyPin)
 {
   _CSPin = CSPin;
-  _cs_mask = digitalPinToBitMask(_CSPin);
-  _cs_port = digitalPinToPort(_CSPin);
-  _cs_reg = portOutputRegister(_cs_port);
+  _cs_mask = (REG_TYPE)digitalPinToBitMask(_CSPin);
+  _cs_port = (REG_TYPE)digitalPinToPort(_CSPin);
+  _cs_reg = (volatile REG_TYPE *)portOutputRegister(digitalPinToPort(_CSPin));
   _resetPin = resetPin;
   _busyPin = busyPin;
   
@@ -22,9 +27,9 @@ dSPIN::dSPIN(int CSPin, int resetPin, int busyPin)
 dSPIN::dSPIN(int CSPin, int resetPin)
 {
   _CSPin = CSPin;
-  _cs_mask = digitalPinToBitMask(_CSPin);
-  _cs_port = digitalPinToPort(_CSPin);
-  _cs_reg = portOutputRegister(_cs_port);
+  _cs_mask = (REG_TYPE)digitalPinToBitMask(_CSPin);
+  _cs_port = (REG_TYPE)digitalPinToPort(_CSPin);
+  _cs_reg = (volatile REG_TYPE *)portOutputRegister(digitalPinToPort(_CSPin));
   _resetPin = resetPin;
   _busyPin = -1;
 
@@ -47,9 +52,9 @@ void dSPIN::SPIConfig()
  
   
   digitalWrite(_resetPin, LOW);
-  _delay_ms(5);
+  DELAY(5);
   digitalWrite(_resetPin, HIGH);
-  _delay_ms(5);
+  DELAY(5);
 
   resetBuffers();
 }
