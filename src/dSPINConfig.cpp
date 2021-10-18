@@ -70,8 +70,10 @@ void dSPIN::setMaxSpeed(float stepsPerSecond, byte index)
 
 void dSPIN::setMaxSpeed(float stepsPerSecond)
 {
-  unsigned long integerSpeed = maxSpdCalc(stepsPerSecond);
-  setParam(MAX_SPEED, integerSpeed);
+  for (byte i=0; i<NDSPINS; i++)
+  {
+    setMaxSpeed(stepsPerSecond, i);
+  };
 }
 
 float dSPIN::getMaxSpeed(byte index)
@@ -117,8 +119,10 @@ void dSPIN::setFullSpeed(float stepsPerSecond, byte index)
 
 void dSPIN::setFullSpeed(float stepsPerSecond)
 {
-  unsigned long integerSpeed = FSCalc(stepsPerSecond);
-  setParam(FS_SPD, integerSpeed);
+  for (byte i=0; i<NDSPINS; i++)
+  {
+    setFullSpeed(stepsPerSecond, i);
+  };
 }
 
 float dSPIN::getFullSpeed(byte index)
@@ -137,8 +141,10 @@ void dSPIN::setAcc(float stepsPerSecondPerSecond, byte index)
 
 void dSPIN::setAcc(float stepsPerSecondPerSecond)
 {
-  unsigned long integerAcc = accCalc(stepsPerSecondPerSecond);
-  setParam(ACC, integerAcc);
+  for (byte i=0; i<NDSPINS; i++)
+  {
+    setAcc(stepsPerSecondPerSecond, i);
+  };
 }
 
 float dSPIN::getAcc(byte index)
@@ -155,8 +161,10 @@ void dSPIN::setDec(float stepsPerSecondPerSecond, byte index)
 
 void dSPIN::setDec(float stepsPerSecondPerSecond)
 {
-  unsigned long integerDec = decCalc(stepsPerSecondPerSecond);
-  setParam(DECEL, integerDec);
+  for (byte i=0; i<NDSPINS; i++)
+  {
+    setDec(stepsPerSecondPerSecond, i);
+  };
 }
 
 float dSPIN::getDec(byte index)
@@ -171,7 +179,10 @@ void dSPIN::setOCThreshold(byte threshold, byte index)
 
 void dSPIN::setOCThreshold(byte threshold)
 {
-  setParam(OCD_TH, 0x0F & threshold);
+  for (byte i=0; i<NDSPINS; i++)
+  {
+    setOCThreshold(threshold, i);
+  };
 }
 
 byte dSPIN::getOCThreshold(byte index)
@@ -186,7 +197,10 @@ void dSPIN::setStallThreshold(byte threshold, byte index)
 
 void dSPIN::setStallThreshold(byte threshold)
 {
-  setParam(STALL_TH, 0x3F & threshold);
+  for (byte i=0; i<NDSPINS; i++)
+  {
+    setStallThreshold(threshold, i);
+  };
 }
 
 byte dSPIN::getStallThreshold(byte index)
@@ -373,7 +387,10 @@ void dSPIN::setAccKVAL(byte kvalInput, byte index)
 
 void dSPIN::setAccKVAL(byte kvalInput)
 {
-  setParam(KVAL_ACC, kvalInput);
+  for (byte i=0; i<NDSPINS; i++)
+  {
+    setAccKVAL(kvalInput, i);
+  };
 }
 
 byte dSPIN::getAccKVAL(byte index)
@@ -388,7 +405,10 @@ void dSPIN::setDecKVAL(byte kvalInput, byte index)
 
 void dSPIN::setDecKVAL(byte kvalInput)
 {
-  setParam(KVAL_DEC, kvalInput);
+  for (byte i=0; i<NDSPINS; i++)
+  {
+    setDecKVAL(kvalInput, i);
+  };
 }
 
 byte dSPIN::getDecKVAL(byte index)
@@ -403,7 +423,10 @@ void dSPIN::setRunKVAL(byte kvalInput, byte index)
 
 void dSPIN::setRunKVAL(byte kvalInput)
 {
-  setParam(KVAL_RUN, kvalInput);
+  for (byte i=0; i<NDSPINS; i++)
+  {
+    setRunKVAL(kvalInput, i);
+  };
 }
 
 byte dSPIN::getRunKVAL(byte index)
@@ -418,7 +441,10 @@ void dSPIN::setHoldKVAL(byte kvalInput, byte index)
 
 void dSPIN::setHoldKVAL(byte kvalInput)
 {
-  setParam(KVAL_HOLD, kvalInput);
+  for (byte i=0; i<NDSPINS; i++)
+  {
+    setHoldKVAL(kvalInput, i);
+  };
 }
 
 byte dSPIN::getHoldKVAL(byte index)
