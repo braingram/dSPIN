@@ -297,9 +297,10 @@ class dSPIN
 #define PWM_DIV_7               (0x06)<<13
 
 // Slew rate options
-#define SR_180V_us              0x0000  // 180V/us
-#define SR_290V_us              0x0200  // 290V/us
-#define SR_530V_us              0x0300  // 530V/us
+#define SR_320V_us              0x0000  // 320V/us
+#define SR_75V_us               0x0100  // 75V/us
+#define SR_110V_us              0x0200  // 110V/us
+#define SR_260V_us              0x0300  // 260V/us
 
 // Overcurrent bridge shutdown options
 #define OC_SD_DISABLE           0x0000  // Bridges do NOT shutdown on OC detect
