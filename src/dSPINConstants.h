@@ -106,9 +106,10 @@
 
 // Configure the slew rate of the power bridge output
 #define CONFIG_POW_SR                  0x0300  // Mask for this bit field.
-#define CONFIG_SR_180V_us              0x0000  // 180V/us
-#define CONFIG_SR_290V_us              0x0200  // 290V/us
-#define CONFIG_SR_530V_us              0x0300  // 530V/us
+#define CONFIG_SR_320V_us              0x0000  // 320V/us
+#define CONFIG_SR_75V_us               0x0100  // 75V/us
+#define CONFIG_SR_110V_us              0x0200  // 110V/us
+#define CONFIG_SR_260V_us              0x0300  // 260V/us
 
 // Integer divisors for PWM sinewave generation
 //  See page 32 of the datasheet for more information on this.
