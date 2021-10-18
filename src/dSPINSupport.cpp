@@ -84,20 +84,20 @@ float dSPIN::FSParse(unsigned long stepsPerSec)
     return (((float) (stepsPerSec & 0x000003FF)) + 0.5) / 0.065536;
 }
 
-// The value in the INT_SPD register is [(steps/s)*(tick)]/(2^-24) where tick is 
+// The value in the INT_SPD register is [(steps/s)*(tick)]/(2^-26) where tick is 
 //  250ns (datasheet value)- 0x408 on boot.
-// Multiply desired steps/s by 4.194304 to get an appropriate value for this register
+// Multiply desired steps/s by 16.777216 to get an appropriate value for this register
 // This is a 14-bit value, so we need to make sure the value is at or below 0x3FFF.
 unsigned long dSPIN::intSpdCalc(float stepsPerSec)
 {
-  float temp = stepsPerSec * 4.194304;
+  float temp = stepsPerSec * 16.777216;
   if( (unsigned long) long(temp) > 0x00003FFF) return 0x00003FFF;
   else return (unsigned long) long(temp);
 }
 
 float dSPIN::intSpdParse(unsigned long stepsPerSec)
 {
-    return (float) (stepsPerSec & 0x00003FFF) / 4.194304;
+    return (float) (stepsPerSec & 0x00003FFF) / 16.777216;
 }
 
 // When issuing RUN command, the 20-bit speed is [(steps/s)*(tick)]/(2^-28) where tick is 
