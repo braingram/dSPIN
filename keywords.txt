@@ -103,6 +103,10 @@ setAccKVAL	KEYWORD2
 setDecKVAL	KEYWORD2
 setRunKVAL	KEYWORD2
 setHoldKVAL	KEYWORD2
+setIntersectSpeed	KEYWORD2
+setStartSlope	KEYWORD2
+setAccFinalSlope	KEYWORD2
+setDecFinalSlope	KEYWORD2
 getLoSpdOpt	KEYWORD2
 getStepMode	KEYWORD2
 getMaxSpeed	KEYWORD2
@@ -123,6 +127,10 @@ getAccKVAL	KEYWORD2
 getDecKVAL	KEYWORD2
 getRunKVAL	KEYWORD2
 getHoldKVAL	KEYWORD2
+getIntersectSpeed	KEYWORD2
+getStartSlope	KEYWORD2
+getAccFinalSlope	KEYWORD2
+getDecFinalSlope	KEYWORD2
 getPos	KEYWORD2
 getMark	KEYWORD2
 run	KEYWORD2

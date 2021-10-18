@@ -475,3 +475,69 @@ boolean dSPIN::getLoSpdOpt(byte index)
 {
   return (boolean) ((getParam(MIN_SPEED, index) & 0x00001000) != 0);
 }
+
+// BEMF compensation (on by default) parameters (see 7.4 in datasheet)
+void dSPIN::setIntersectSpeed(float stepsPerSecond, byte index) {
+  // We need to convert the floating point stepsPerSecond into a value that
+  //  the dSPIN can understand. Fortunately, we have a function to do that.
+  unsigned long integerSpeed = intSpdCalc(stepsPerSecond);
+  
+  // Now, we can set that paramter.
+  setParam(INT_SPD, integerSpeed, index);
+}
+
+void dSPIN::setIntersectSpeed(float stepsPerSecond) {
+  for (byte i=0; i<NDSPINS; i++)
+  {
+    setIntersectSpeed(stepsPerSecond, i);
+  }
+}
+
+void dSPIN::setStartSlope(byte slope, byte index) {
+  setParam(ST_SLP, slope, index);
+}
+
+void dSPIN::setStartSlope(byte slope) {
+  for (byte i=0; i<NDSPINS; i++)
+  {
+    setStartSlope(slope, i);
+  }
+}
+
+void dSPIN::setAccFinalSlope(byte slope, byte index) {
+  setParam(FN_SLP_ACC, slope, index);
+}
+
+void dSPIN::setAccFinalSlope(byte slope) {
+  for (byte i=0; i<NDSPINS; i++)
+  {
+    setAccFinalSlope(slope, i);
+  }
+}
+void dSPIN::setDecFinalSlope(byte slope, byte index) {
+  setParam(FN_SLP_DEC, slope, index);
+}
+
+
+void dSPIN::setDecFinalSlope(byte slope) {
+  for (byte i=0; i<NDSPINS; i++)
+  {
+    setDecFinalSlope(slope, i);
+  }
+}
+
+float dSPIN::getIntersectSpeed(byte index) {
+  return intSpdParse(getParam(INT_SPD, index));
+}
+  
+byte dSPIN::getStartSlope(byte index) {
+  return getParam(ST_SLP, index);
+}
+
+byte dSPIN::getAccFinalSlope(byte index) {
+  return getParam(FN_SLP_ACC, index);
+}
+
+byte dSPIN::getDecFinalSlope(byte index) {
+  return getParam(FN_SLP_DEC, index);
+}

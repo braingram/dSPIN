@@ -112,6 +112,14 @@ class dSPIN
     void setRunKVAL(byte kvalInput);
     void setHoldKVAL(byte kvalInput, byte index);
     void setHoldKVAL(byte kvalInput);
+    void setIntersectSpeed(float stepsPerSecond, byte index);
+    void setIntersectSpeed(float stepsPerSecond);
+    void setStartSlope(byte slope, byte index);
+    void setStartSlope(byte slope);
+    void setAccFinalSlope(byte slope, byte index);
+    void setAccFinalSlope(byte slope);
+    void setDecFinalSlope(byte slope, byte index);
+    void setDecFinalSlope(byte slope);
 
     boolean getLoSpdOpt(byte index);
     // getSyncPin
@@ -134,6 +142,10 @@ class dSPIN
     byte getDecKVAL(byte index);
     byte getRunKVAL(byte index);
     byte getHoldKVAL(byte index);
+    float getIntersectSpeed(byte index);
+    byte getStartSlope(byte index);
+    byte getAccFinalSlope(byte index);
+    byte getDecFinalSlope(byte index);
 
     // Operational commands.
     long getPos(byte index);
