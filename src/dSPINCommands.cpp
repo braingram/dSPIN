@@ -169,7 +169,7 @@ void dSPIN::goToDir(byte dir, long pos)
 void dSPIN::goUntil(byte action, byte dir, float stepsPerSec, byte index)
 {
   unsigned long integerSpeed = spdCalc(stepsPerSec);
-  if (integerSpeed > 0x3FFFFF) integerSpeed = 0x3FFFFF;
+  if (integerSpeed > 0xFFFFF) integerSpeed = 0xFFFFF;
   setCommand(GO_UNTIL | dir, index);
   setNBytes(3, index);
   setValue(integerSpeed, index);
@@ -180,7 +180,7 @@ void dSPIN::goUntil(byte action, byte dir, float stepsPerSec, byte index)
 void dSPIN::goUntil(byte action, byte dir, float stepsPerSec)
 {
   unsigned long integerSpeed = spdCalc(stepsPerSec);
-  if (integerSpeed > 0x3FFFFF) integerSpeed = 0x3FFFFF;
+  if (integerSpeed > 0xFFFFF) integerSpeed = 0xFFFFF;
   setCommand(GO_UNTIL | dir);
   setNBytes(3);
   setValue(integerSpeed);
