@@ -10,8 +10,13 @@ void dSPIN::lowerCS()
   Serial.print("cs=low\n");
   #endif
   //digitalWrite(_CSPin, LOW);
-  *_cs_reg &= ~_cs_mask; 
+  *_cs_reg &= ~_cs_mask;
+  //asm("NOP");  // give some time to setup
+  #ifdef CORE_TEENSY
+  delayMicroseconds(1);
+  #else
   asm("NOP");  // give some time to setup
+  #endif
 };
 
 void dSPIN::raiseCS()
@@ -19,8 +24,14 @@ void dSPIN::raiseCS()
   #ifdef DSPIN_DEBUG
   Serial.print("cs=high\n");
   #endif
+    #ifdef CORE_TEENSY
+  delayMicroseconds(1);
+  #endif
   //digitalWrite(_CSPin, HIGH);
-  *_cs_reg |= _cs_mask; 
+  *_cs_reg |= _cs_mask;
+    #ifdef CORE_TEENSY
+  delayMicroseconds(1);
+  #endif
 };
 
 void dSPIN::setCommand(byte command, byte index)
